@@ -5,10 +5,10 @@ export const colors = {
   muted: '#8896A6',
   bg: '#F4F1EA',
   surface: '#FFFFFF',
-  line: '#E6E2D8',
-  primary: '#1B4D7A',
-  alert: '#C84A3D',
-  safe: '#3F8F6E',
+  line: '#ECF1FF',
+  primary: '#2260FF',
+  alert: '#FF0000',
+  safe: '#008A19',
 } as const;
 
 export const typography = {

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, typography, spacing, borderRadius, shadows } from '../theme/tokens';
+import { colors, typography, spacing, borderRadius } from '../theme/tokens';
 import { RootStackParamList, PostCPREAnswers } from '../logic/types';
 import { YesNoCard, PrimaryButton, Stepper, FootnoteCard } from '../components';
 import { postAssessmentQuestions, assessPostCPRERisk } from '../logic/riskEngine';
+import { Info } from 'lucide-react-native';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PostAssessment'>;
 
@@ -61,8 +62,12 @@ const PostAssessmentScreen: React.FC<Props> = ({ navigation }) => {
           </Text>
         </View>
 
+        {/* Card de Aviso Melhorado */}
         <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>Importante</Text>
+          <View style={styles.infoHeader}>
+            <Info color={colors.primary} size={18} />
+            <Text style={styles.infoTitle}>Importante</Text>
+          </View>
           <Text style={styles.infoText}>
             Esta avaliação deve ser realizada durante ou imediatamente após
             o procedimento de CPRE, baseada nos eventos intraoperatórios observados.
@@ -85,6 +90,7 @@ const PostAssessmentScreen: React.FC<Props> = ({ navigation }) => {
 
         <FootnoteCard references={footnoteRefs} />
 
+        {/* Contador de Progresso */}
         <View style={styles.progressInfo}>
           <Text style={styles.progressText}>
             Respondidas: {Object.keys(answers).length} de {postAssessmentQuestions.length}
@@ -106,7 +112,7 @@ const PostAssessmentScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: colors.surface, // Fundo Branco
   },
   scrollView: {
     flex: 1,
@@ -123,7 +129,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: typography.fontSize['2xl'],
     fontFamily: typography.fontFamily.uiBold,
-    color: colors.ink,
+    color: colors.primary, // Azul para manter o padrão
     textAlign: 'center',
     marginBottom: spacing.sm,
     lineHeight: typography.fontSize['2xl'] * typography.lineHeight.tight,
@@ -136,36 +142,40 @@ const styles = StyleSheet.create({
     lineHeight: typography.fontSize.base * typography.lineHeight.normal,
   },
   infoCard: {
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
+    backgroundColor: '#ECF1FF', // Fundo azul claro para combinar com o aviso da tela final
+    borderRadius: borderRadius.md,
     padding: spacing.base,
     marginBottom: spacing.lg,
     borderLeftWidth: 4,
     borderLeftColor: colors.primary,
-    ...shadows.sm,
+  },
+  infoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.xs,
+    gap: spacing.xs,
   },
   infoTitle: {
-    fontSize: typography.fontSize.base,
+    fontSize: typography.fontSize.sm, // Tamanho sutil mas destacado pelo Bold
     fontFamily: typography.fontFamily.uiBold,
-    color: colors.ink,
-    marginBottom: spacing.xs,
+    color: colors.primary, // Azul para combinar com o ícone
   },
   infoText: {
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.ui,
     color: colors.ink2,
-    lineHeight: typography.fontSize.sm * typography.lineHeight.normal,
+    lineHeight: typography.fontSize.sm * typography.lineHeight.relaxed,
   },
   questionsContainer: {
     marginBottom: spacing.lg,
+    gap: spacing.md, // Espaçamento harmônico entre os cards de Sim/Não
   },
   progressInfo: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.bg, // Fundo cinza/creme claro para destacar no fundo branco
     borderRadius: borderRadius.base,
     padding: spacing.base,
     marginTop: spacing.lg,
     alignItems: 'center',
-    ...shadows.sm,
   },
   progressText: {
     fontSize: typography.fontSize.sm,

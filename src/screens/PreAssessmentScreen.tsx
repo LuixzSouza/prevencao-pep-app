@@ -98,7 +98,7 @@ const PreAssessmentScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: colors.surface, // Fundo Branco
   },
   scrollView: {
     flex: 1,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: typography.fontSize['2xl'],
     fontFamily: typography.fontFamily.uiBold,
-    color: colors.ink,
+    color: colors.primary, // Mudei para azul para combinar com o tema limpo
     textAlign: 'center',
     marginBottom: spacing.sm,
     lineHeight: typography.fontSize['2xl'] * typography.lineHeight.tight,
@@ -129,14 +129,14 @@ const styles = StyleSheet.create({
   },
   questionsContainer: {
     marginBottom: spacing.lg,
+    gap: spacing.md, // Adiciona um espaçamento legal entre os cards
   },
   progressInfo: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.bg, // Fundo levemente cinza/creme para destacar do branco
     borderRadius: borderRadius.base,
     padding: spacing.base,
     marginTop: spacing.lg,
     alignItems: 'center',
-    ...shadows.sm,
   },
   progressText: {
     fontSize: typography.fontSize.sm,

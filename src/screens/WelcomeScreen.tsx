@@ -1,13 +1,26 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, typography, spacing, borderRadius, shadows } from '../theme/tokens';
 import { RootStackParamList } from '../logic/types';
 import { PrimaryButton } from '../components';
+import { CheckCircle2, ShieldAlert, ChevronDown, ChevronUp } from 'lucide-react-native';
+
+// Habilita animação de layout no Android (para o botão "Saiba mais" abrir suavemente)
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
+  const [showInfo, setShowInfo] = useState(false);
+
+  const toggleInfo = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setShowInfo(!showInfo);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -15,52 +28,86 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>Bem-vindo</Text>
-          <Text style={styles.subtitle}>
-            Prevenção de Pancreatite Pós-CPRE
-          </Text>
+        {/* Seção de Destaque (Logo e Título) */}
+        <View style={styles.heroSection}>
+          <Image 
+            source={require('../../assets/logo-blue.png')} 
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.titleRegular}>Prevenção de Pancreatite</Text>
+          <Text style={styles.titleBold}>Pós-CPRE</Text>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Sobre esta ferramenta</Text>
-          <Text style={styles.description}>
-            Este aplicativo auxilia na estratificação de risco para prevenção de pancreatite pós-CPRE (PEP)
-            através de avaliações baseadas em evidências científicas.
+        {/* Seção de Ação */}
+        <View style={styles.actionSection}>
+          <Text style={styles.instructionText}>
+            Para acessar, informe seu CRC e senha.
           </Text>
 
-          <View style={styles.featureList}>
-            <Text style={styles.feature}>• Avaliação pré-procedimento</Text>
-            <Text style={styles.feature}>• Avaliação intraoperatória</Text>
-            <Text style={styles.feature}>• Protocolos de tratamento personalizados</Text>
-            <Text style={styles.feature}>• Interface intuitiva e acessível</Text>
+          <PrimaryButton
+            title="Entrar"
+            onPress={() => navigation.navigate('Login')}
+          />
+
+          {/* Botão de Toggle Melhorado com Ícone */}
+          <TouchableOpacity 
+            style={styles.toggleButton} 
+            onPress={toggleInfo}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+          >
+            <Text style={styles.toggleText}>
+              {showInfo ? 'Ocultar informações' : 'Saiba mais sobre a ferramenta'}
+            </Text>
+            {showInfo ? (
+              <ChevronUp color={colors.primary} size={16} />
+            ) : (
+              <ChevronDown color={colors.primary} size={16} />
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {/* Seção de Informações (Oculta por padrão) */}
+        {showInfo && (
+          <View style={styles.infoSection}>
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Sobre esta ferramenta</Text>
+              <Text style={styles.description}>
+                Este aplicativo auxilia na estratificação de risco para prevenção de pancreatite pós-CPRE (PEP)
+                através de avaliações baseadas em evidências científicas.
+              </Text>
+
+              {/* Lista com Ícones Customizados */}
+              <View style={styles.featureList}>
+                {[
+                  'Avaliação pré-procedimento',
+                  'Avaliação intraoperatória',
+                  'Protocolos de tratamento personalizados',
+                  'Interface intuitiva e acessível'
+                ].map((feature, index) => (
+                  <View key={index} style={styles.featureItem}>
+                    <CheckCircle2 size={16} color={colors.primary} />
+                    <Text style={styles.featureText}>{feature}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            {/* Disclaimer Estilo "Aviso Médico" */}
+            <View style={styles.disclaimer}>
+              <View style={styles.disclaimerHeader}>
+                <ShieldAlert size={18} color={colors.primary} />
+                <Text style={styles.disclaimerBold}>Importante</Text>
+              </View>
+              <Text style={styles.disclaimerText}>
+                Esta ferramenta é destinada a profissionais de saúde qualificados. 
+                As recomendações devem ser sempre consideradas no contexto clínico individual do paciente.
+              </Text>
+            </View>
           </View>
-        </View>
-
-        <View style={styles.disclaimer}>
-          <Text style={styles.disclaimerText}>
-            <Text style={styles.disclaimerBold}>Importante:</Text> Esta ferramenta é destinada
-            a profissionais de saúde qualificados. As recomendações devem ser sempre consideradas
-            no contexto clínico individual do paciente.
-          </Text>
-        </View>
+        )}
       </ScrollView>
-
-      <View style={styles.footer}>
-        <PrimaryButton
-          title="Continuar"
-          onPress={() => navigation.navigate('Login')}
-        />
-
-        <Text
-          style={styles.skipText}
-          onPress={() => navigation.navigate('PreAssessment')}
-          accessibilityRole="button"
-          accessibilityLabel="Pular login e ir direto para avaliação"
-        >
-          Pular login
-        </Text>
-      </View>
     </View>
   );
 };
@@ -68,43 +115,82 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: colors.surface, // Fundo branco
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing['3xl'],
+    paddingTop: spacing['5xl'],
+    paddingBottom: spacing['4xl'], // Aumentei o padding de baixo para respirar melhor
+    flexGrow: 1, // FlexGrow em vez de minHeight previne bugs de rolagem
+    justifyContent: 'center',
   },
-  header: {
+  heroSection: {
     alignItems: 'center',
-    marginBottom: spacing['2xl'],
+    marginBottom: spacing['4xl'],
   },
-  title: {
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: spacing.xl,
+  },
+  titleRegular: {
+    fontSize: typography.fontSize['2xl'],
+    fontFamily: typography.fontFamily.uiBold,
+    color: colors.primary, // Texto em azul
+    textAlign: 'center',
+    lineHeight: typography.fontSize['2xl'] * typography.lineHeight.tight,
+  },
+  titleBold: {
     fontSize: typography.fontSize['4xl'],
     fontFamily: typography.fontFamily.uiExtraBold,
-    color: colors.ink,
+    color: colors.primary, // Texto em azul com peso maior
     textAlign: 'center',
-    marginBottom: spacing.sm,
+    lineHeight: typography.fontSize['4xl'] * typography.lineHeight.tight,
   },
-  subtitle: {
-    fontSize: typography.fontSize.lg,
+  actionSection: {
+    marginBottom: spacing.xl,
+    gap: spacing.md,
+  },
+  instructionText: {
+    fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.ui,
     color: colors.ink2,
     textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  toggleButton: {
+    flexDirection: 'row', // Alinha o texto e o ícone lado a lado
+    paddingVertical: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.sm,
+    gap: 4, // Espaço entre o texto e o ícone
+  },
+  toggleText: {
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.uiBold,
+    color: colors.primary,
+    textDecorationLine: 'underline',
+  },
+  infoSection: {
+    marginTop: spacing.md,
   },
   card: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.bg, // Fundo bege/cinza bem clarinho
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     marginBottom: spacing.lg,
-    ...shadows.base,
+    borderWidth: 1,
+    borderColor: colors.line, // Adiciona uma borda sutil
+    ...shadows.sm,
   },
   cardTitle: {
     fontSize: typography.fontSize.xl,
     fontFamily: typography.fontFamily.uiBold,
-    color: colors.ink,
+    color: colors.primary,
     marginBottom: spacing.md,
   },
   description: {
@@ -116,43 +202,42 @@ const styles = StyleSheet.create({
   },
   featureList: {
     marginTop: spacing.md,
+    gap: spacing.sm, // Dá um respiro entre os itens da lista
   },
-  feature: {
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  featureText: {
+    flex: 1, // Garante que o texto quebre a linha corretamente se não couber
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.ui,
     color: colors.ink2,
-    lineHeight: typography.fontSize.base * typography.lineHeight.relaxed,
-    marginBottom: spacing.xs,
   },
   disclaimer: {
-    backgroundColor: colors.line,
+    backgroundColor: '#ECF1FF', // Azul clarinho padrão do app para avisos
     borderRadius: borderRadius.base,
     padding: spacing.base,
-    marginBottom: spacing.xl,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary, // Borda lateral marcante
+  },
+  disclaimerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
+  },
+  disclaimerBold: {
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.uiBold,
+    color: colors.primary,
   },
   disclaimerText: {
     fontSize: typography.fontSize.sm,
     fontFamily: typography.fontFamily.ui,
     color: colors.ink2,
     lineHeight: typography.fontSize.sm * typography.lineHeight.relaxed,
-    textAlign: 'center',
-  },
-  disclaimerBold: {
-    fontFamily: typography.fontFamily.uiBold,
-    color: colors.ink,
-  },
-  footer: {
-    padding: spacing.lg,
-    paddingBottom: spacing['2xl'],
-    gap: spacing.base,
-  },
-  skipText: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.ui,
-    color: colors.primary,
-    textAlign: 'center',
-    textDecorationLine: 'underline',
-    paddingVertical: spacing.md,
   },
 });
 

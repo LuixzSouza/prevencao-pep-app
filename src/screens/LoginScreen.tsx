@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { colors, typography, spacing, borderRadius, shadows } from '../theme/tokens';
+import { colors, typography, spacing, borderRadius } from '../theme/tokens';
 import { RootStackParamList, LoginData } from '../logic/types';
 import { PrimaryButton, Field } from '../components';
+import { ChevronLeft } from 'lucide-react-native';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
@@ -79,6 +80,25 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Barra Superior com Voltar e Logo */}
+        <View style={styles.topBar}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            accessibilityRole="button"
+            accessibilityLabel="Voltar"
+          >
+            <ChevronLeft color={colors.primary} size={24} />
+            <Text style={styles.backText}>Voltar</Text>
+          </TouchableOpacity>
+
+          <Image 
+            source={require('../../assets/logo-blue.png')} 
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
+
         <View style={styles.header}>
           <Text style={styles.title}>Entrar</Text>
           <Text style={styles.subtitle}>
@@ -90,6 +110,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           <Field
             label="CRC"
             placeholder="Digite seu CRC (ex: 12345)"
+            placeholderTextColor="#9E9E9E"
             value={formData.crc}
             onChangeText={(text) => setFormData(prev => ({ ...prev, crc: text }))}
             error={errors.crc}
@@ -98,11 +119,15 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             required
             autoComplete="username"
             textContentType="username"
+            style={{ backgroundColor: '#ECF1FF' }}
           />
+
+          <View style={styles.fieldSpacing} />
 
           <Field
             label="Senha"
             placeholder="Digite sua senha"
+            placeholderTextColor="#9E9E9E"
             value={formData.password}
             onChangeText={(text) => setFormData(prev => ({ ...prev, password: text }))}
             error={errors.password}
@@ -110,6 +135,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             required
             autoComplete="current-password"
             textContentType="password"
+            style={{ backgroundColor: '#ECF1FF' }}
           />
 
           <TouchableOpacity
@@ -143,7 +169,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           accessibilityRole="button"
           accessibilityLabel="Pular login"
         >
-          Continuar sem login
+          Pular login
         </Text>
       </View>
     </View>
@@ -153,7 +179,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.bg,
+    backgroundColor: colors.surface, // Fundo principal Branco
   },
   scrollView: {
     flex: 1,
@@ -162,39 +188,59 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.xl,
   },
-  header: {
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: spacing['2xl'],
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.xs,
+    marginLeft: -spacing.xs, // Puxa levemente para a esquerda para alinhar visualmente
+  },
+  backText: {
+    fontSize: typography.fontSize.base,
+    fontFamily: typography.fontFamily.uiBold,
+    color: colors.primary,
+    marginLeft: 4,
+  },
+  logo: {
+    width: 40,
+    height: 40,
+  },
+  header: {
+    alignItems: 'flex-start', // Alinhado à esquerda para dar um visual mais moderno e limpo
     marginBottom: spacing['2xl'],
   },
   title: {
     fontSize: typography.fontSize['3xl'],
-    fontFamily: typography.fontFamily.uiBold,
-    color: colors.ink,
-    textAlign: 'center',
-    marginBottom: spacing.sm,
+    fontFamily: typography.fontFamily.uiExtraBold,
+    color: colors.primary, // Azul
+    marginBottom: spacing.xs,
   },
   subtitle: {
     fontSize: typography.fontSize.base,
     fontFamily: typography.fontFamily.ui,
     color: colors.ink2,
-    textAlign: 'center',
   },
   form: {
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
+    // Fundo branco sem sombras, totalmente integrado à tela
+    backgroundColor: 'transparent', 
     marginBottom: spacing.lg,
-    ...shadows.base,
+  },
+  fieldSpacing: {
+    height: spacing.lg,
   },
   forgotPassword: {
     alignSelf: 'flex-end',
-    marginTop: spacing.sm,
+    marginTop: spacing.md,
   },
   forgotPasswordText: {
-    fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.ui,
+    fontSize: typography.fontSize.sm,
+    fontFamily: typography.fontFamily.uiBold,
     color: colors.primary,
-    textDecorationLine: 'underline',
   },
   testInfo: {
     backgroundColor: colors.line,
@@ -217,14 +263,14 @@ const styles = StyleSheet.create({
   footer: {
     padding: spacing.lg,
     paddingBottom: spacing['2xl'],
-    gap: spacing.base,
+    gap: spacing.md,
   },
   skipText: {
     fontSize: typography.fontSize.base,
-    fontFamily: typography.fontFamily.ui,
-    color: colors.muted,
-    textAlign: 'center',
+    fontFamily: typography.fontFamily.uiBold,
     textDecorationLine: 'underline',
+    color: colors.primary, 
+    textAlign: 'center',
     paddingVertical: spacing.md,
   },
 });

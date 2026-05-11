@@ -21,17 +21,20 @@ export const RootNavigator: React.FC = () => {
       <Stack.Navigator
         initialRouteName="Splash"
         screenOptions={{
+          // --- Configurações Premium do Cabeçalho Global ---
           headerStyle: {
             backgroundColor: colors.surface,
           },
-          headerTintColor: colors.ink,
+          headerTintColor: colors.primary, // Seta de voltar em Azul
           headerTitleStyle: {
             fontFamily: typography.fontFamily.uiBold,
             fontSize: typography.fontSize.lg,
+            color: colors.primary, // Título em Azul
           },
-          headerShadowVisible: true,
+          headerTitleAlign: 'center', // Centraliza em ambos iOS e Android
+          headerShadowVisible: false, // Design Flat (Remove a linha preta abaixo do cabeçalho)
           contentStyle: {
-            backgroundColor: colors.bg,
+            backgroundColor: colors.surface, // Fundo branco padrão para evitar flashes
           },
         }}
       >
@@ -50,46 +53,31 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="Login"
           component={LoginScreen}
-          options={{
-            title: 'Entrar',
-            headerBackTitle: 'Voltar',
-          }}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
           name="PreAssessment"
           component={PreAssessmentScreen}
-          options={{
-            title: 'Avaliação Pré-CPRE',
-            headerBackTitle: 'Voltar',
-          }}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
           name="PreResult"
           component={PreResultScreen}
-          options={{
-            title: 'Resultado Pré-CPRE',
-            headerBackTitle: 'Voltar',
-          }}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
           name="PostAssessment"
           component={PostAssessmentScreen}
-          options={{
-            title: 'Avaliação Pós-CPRE',
-            headerBackTitle: 'Voltar',
-          }}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
           name="PostResult"
           component={PostResultScreen}
-          options={{
-            title: 'Resultado Final',
-            headerBackTitle: 'Voltar',
-          }}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

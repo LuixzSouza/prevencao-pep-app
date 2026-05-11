@@ -1,3 +1,4 @@
+import { colors } from '../theme/tokens';
 import {
   PreCPREAnswers,
   PostCPREAnswers,
@@ -142,10 +143,10 @@ export const footnotes = {
 export const getRiskLevelColor = (level: PreRiskLevel | PostRiskLevel): string => {
   switch (level) {
     case 'high':
-      return '#C84A3D'; // alert
+      return colors.alert; 
     case 'low':
     case 'none':
-      return '#3F8F6E'; // safe
+      return colors.safe; 
   }
 };
 

@@ -1,5 +1,5 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useRef } from 'react';
+import { Text, StyleSheet, ActivityIndicator, Animated, Pressable } from 'react-native';
 import { colors, typography, spacing, borderRadius, shadows } from '../theme/tokens';
 
 interface PrimaryButtonProps {
@@ -17,8 +17,30 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   loading = false,
   variant = 'primary',
 }) => {
+  // Controle da animação de escala (zoom)
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const animatePressIn = () => {
+    if (disabled || loading) return;
+    Animated.spring(scale, {
+      toValue: 0.95, // Encolhe levemente para 95%
+      useNativeDriver: true,
+      speed: 20,
+    }).start();
+  };
+
+  const animatePressOut = () => {
+    if (disabled || loading) return;
+    Animated.spring(scale, {
+      toValue: 1, // Volta ao tamanho original
+      useNativeDriver: true,
+      friction: 4,
+      tension: 50,
+    }).start();
+  };
+
   const getBackgroundColor = () => {
-    if (disabled) return colors.muted;
+    if (disabled) return colors.muted; // Cor cinza quando inativo
     switch (variant) {
       case 'safe':
         return colors.safe;
@@ -30,24 +52,28 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   };
 
   return (
-    <TouchableOpacity
-      style={[
-        styles.button,
-        { backgroundColor: getBackgroundColor() },
-        disabled && styles.disabled,
-      ]}
-      onPress={onPress}
-      disabled={disabled || loading}
-      accessibilityRole="button"
-      accessibilityLabel={title}
-      accessibilityState={{ disabled: disabled || loading }}
-    >
-      {loading ? (
-        <ActivityIndicator color={colors.surface} size="small" />
-      ) : (
-        <Text style={styles.text}>{title}</Text>
-      )}
-    </TouchableOpacity>
+    <Animated.View style={{ transform: [{ scale }] }}>
+      <Pressable
+        style={[
+          styles.button,
+          { backgroundColor: getBackgroundColor() },
+          disabled && styles.buttonDisabled, // Aplica estilo extra se desativado
+        ]}
+        onPressIn={animatePressIn}
+        onPressOut={animatePressOut}
+        onPress={onPress}
+        disabled={disabled || loading}
+        accessibilityRole="button"
+        accessibilityLabel={title}
+        accessibilityState={{ disabled: disabled || loading }}
+      >
+        {loading ? (
+          <ActivityIndicator color={colors.surface} size="small" />
+        ) : (
+          <Text style={styles.text}>{title}</Text>
+        )}
+      </Pressable>
+    </Animated.View>
   );
 };
 
@@ -55,14 +81,17 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: spacing.base,
     paddingHorizontal: spacing.xl,
-    borderRadius: borderRadius.md,
+    borderRadius: borderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48,
-    ...shadows.base,
+    minHeight: 52, // Aumentei levemente a altura para ficar mais ergonômico
+    ...shadows.base, // Sombra padrão
   },
-  disabled: {
+  buttonDisabled: {
     ...shadows.sm,
+    shadowOpacity: 0, // Remove a sombra
+    elevation: 0, // Remove elevação no Android
+    opacity: 0.7, // Deixa levemente transparente
   },
   text: {
     fontSize: typography.fontSize.base,
